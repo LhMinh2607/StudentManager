@@ -453,7 +453,7 @@ public class Menu extends JFrame {
 			@Override
 			public void keyTyped(KeyEvent eve) {
 				char k = eve.getKeyChar();
-				if(!(Character.isLetter(k) || k==KeyEvent.VK_BACK_SPACE || k==KeyEvent.VK_DELETE || k==KeyEvent.VK_PERIOD))
+				if(!(Character.isLetter(k) || k==KeyEvent.VK_BACK_SPACE || k==KeyEvent.VK_DELETE || k==KeyEvent.VK_PERIOD || k==KeyEvent.VK_SPACE))
 				{
 					eve.consume(); //Tiêu thụ sự kiện này => Không xử lý nó
 				}
