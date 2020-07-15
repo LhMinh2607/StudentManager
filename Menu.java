@@ -640,30 +640,26 @@ public class Menu extends JFrame {
 		//xóa sinh viên
 		Deletebtn.setEnabled(false);
 		Deletebtn.addActionListener(new ActionListener() {
-			@SuppressWarnings("unlikely-arg-type")
 			public void actionPerformed(ActionEvent e) {
 				
 				try {
 					Connection con = sqlc.getConnection();
-					//StudentDAO std = new StudentDAO();
-					//int row = stTable.getSelectedRow();
-					//String value=(stTable.getModel().getValueAt(row, 0).toString());
-					if(mssvTextField.getText().equals(""))
-					{
-						std.delete(mssvTextField.getText());
-					}
+					StudentDAO std = new StudentDAO();
+					int row = stTable.getSelectedRow();
+					String value=(stTable.getModel().getValueAt(row, 0).toString());
+					
 					int answer = JOptionPane.showConfirmDialog(frame, "Bạn có chắc là muốn xóa sinh viên này không?", "CẢNH BÁO", JOptionPane.YES_NO_OPTION);
 					
 					if (answer == JOptionPane.YES_OPTION) 
 					{
 						
 						//String query="DELETE FROM STUDENTS WHERE ID="+value;
-						std.delete(mssvTextField.getText());
-						functionReset();
+						//String value=mssvTextField.getText();
+						std.delete(value);
 						JLabel mess = new JLabel("Đã xóa 1 sinh viên");
 						mess.setFont(new Font("Arial", Font.BOLD, 18));
 						JOptionPane.showMessageDialog(frame, mess);
-						
+						functionReset();
 						
 					} else if(answer == JOptionPane.NO_OPTION) {
 					  	// do something else
