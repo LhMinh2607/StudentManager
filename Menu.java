@@ -56,8 +56,11 @@ import javax.swing.table.TableRowSorter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.JScrollPane;
@@ -346,11 +349,18 @@ public class Menu extends JFrame {
 				toolBar.setVisible(true);
 				toolBar.setEnabled(true);
 				RankTitleJCB.setSelectedIndex(0);
+				toolBar2.setVisible(false);
 			}
 		});
 		xeploai.setFont(new Font("Segoe UI", Font.PLAIN, 24));
 		
 		FeatureMenu.add(xeploai);
+		boloc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				toolBar.setVisible(false);
+				toolBar2.setVisible(false);
+			}
+		});
 		boloc.setFont(new Font("Segoe UI", Font.PLAIN, 24));
 		
 		FeatureMenu.add(boloc);
@@ -358,6 +368,7 @@ public class Menu extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				toolBar2.setVisible(true);
 				listingJCB.setSelectedIndex(0);
+				toolBar.setVisible(false);
 			}
 		});
 		thongke.setFont(new Font("Segoe UI", Font.PLAIN, 24));
@@ -1106,6 +1117,7 @@ public class Menu extends JFrame {
 		ListingLabel.setForeground(SystemColor.menuText);
 		ListingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
 		listingJCB.addActionListener(new ActionListener() {
+			@SuppressWarnings("null")
 			public void actionPerformed(ActionEvent e) {
 				String select = listingJCB.getSelectedItem().toString();
 				if(select.equals("Tỉ lệ nam : nữ"))
@@ -1125,28 +1137,46 @@ public class Menu extends JFrame {
 					ChartFrame frame = new ChartFrame("Sơ đồ tròn Tỉ lệ Nam : Nữ", chart);
 					frame.setVisible(true);
 					frame.setSize(600, 800);
-					
 				}
-				if(select.equals("Số ngành học ở trường"))
+				if(select.equals("Ngành theo số sinh viên"))
 				{
-					/*tbl.setRowCount(0);
-					tableUpdateFiltered("SELECT * FROM Students WHERE ");
-					int malecount=stTable.getRowCount();
-					tbl.setRowCount(0);
-					tableUpdateFiltered("SELECT * FROM Students WHERE Gender=N'Nữ'");
-					int femalecount=stTable.getRowCount();
+					int i;
+					int[] count = new int[100];
+					for(i=0;i<nganh.length;i++)
+					{
+						tbl.setRowCount(0);
+						tableUpdateFiltered("SELECT * FROM Students WHERE CLASS=N'"+nganh[i]+"'");
+						if(stTable.getRowCount()==0)
+						{
+							count[i]=0;
+						}
+						if(stTable.getRowCount()!=0)
+						{
+							count[i]=stTable.getRowCount();
+						}
+						
+					}
+					
 					tbl.setRowCount(0);
 					tableUpdate();
+					
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
-					pieDataset.setValue("Nam", malecount);
-					pieDataset.setValue("Nữ", femalecount);
-					JFreeChart chart = ChartFactory.createPieChart("Tỉ lệ Nam : Nữ", pieDataset, true, true, true);
-					ChartFrame frame = new ChartFrame("Sơ đồ tròn Tỉ lệ Nam : Nữ", chart);
+					for(i=0;i<nganh.length;i++)
+					{
+						pieDataset.setValue(nganh[i], count[i]);
+					}
+					for(i=0;i<nganh.length;i++)
+					{
+						System.out.print(count[i]+" ngành "+i+" ");
+					}
+					
+					JFreeChart chart = ChartFactory.createPieChart("Tỉ lệ Ngành theo số sinh viên", pieDataset, true, true, true);					
+					ChartFrame frame = new ChartFrame("Sơ đồ tròn Ngành theo số sinh viên", chart);
 					frame.setVisible(true);
-					frame.setSize(600, 800);*/
+					frame.setSize(600, 800);
 					
 				}
-				if(select.equals("Điểm"))
+				if(select.equals("Xếp loại"))
 				{
 					tbl.setRowCount(0);
 					tableUpdateFiltered("SELECT * FROM Students WHERE GPA<5");
@@ -1170,16 +1200,55 @@ public class Menu extends JFrame {
 					pieDataset.setValue("Trung Bình (>=5)", avgcount);
 					pieDataset.setValue("Khá (>=7)", closecount);
 					pieDataset.setValue("Giỏi (>=8)", goodcount);
-					pieDataset.setValue("Xuất sắc (>9)", outstandingcount);
+					pieDataset.setValue("Xuất sắc (>=9)", outstandingcount);
 					JFreeChart chart = ChartFactory.createPieChart("Tỉ lệ Xếp loại", pieDataset, true, true, true);
 					ChartFrame frame = new ChartFrame("Sơ đồ tròn Tỉ Xếp loại", chart);
 					frame.setVisible(true);
 					frame.setSize(600, 800);
 					
 				}
+				if(select.equals("Điểm"))
+				{ 
+					int i;
+					int[] count = new int[100];
+					for(i=0;i<11;i++)
+					{
+						int j=i+1;
+						tbl.setRowCount(0);
+						tableUpdateFiltered("SELECT * FROM Students WHERE GPA>="+i+" AND GPA <"+j);
+						if(stTable.getRowCount()==0)
+						{
+							count[i]=0;
+						}
+						if(stTable.getRowCount()!=0)
+						{
+							count[i]=stTable.getRowCount();
+						}
+					}
+					
+					tbl.setRowCount(0);
+					tableUpdate();
+					
+					DefaultCategoryDataset Dataset = new DefaultCategoryDataset();
+					for(i=0;i<11;i++)
+					{
+						Dataset.setValue(count[i], Integer.toString(i), Integer.toString(i));
+					}
+					for(i=0;i<11;i++)
+					{
+						System.out.print(count[i]+" điểm "+i+" ");
+					}
+					
+					JFreeChart chart = ChartFactory.createBarChart3D("Thống kê điểm" , "Loại điểm", "Số lượng", Dataset, PlotOrientation.VERTICAL, true, true, true);
+					ChartFrame frame = new ChartFrame("Sơ đồ cột Tỉ lệ Điểm", chart);
+					frame.setVisible(true);
+					frame.setSize(600, 800);
+					
+				}
+				
 			}
 		});
-		listingJCB.setModel(new DefaultComboBoxModel(new String[] {"None", "Số ngành học ở trường", "Tỉ lệ nam : nữ", "Điểm"}));
+		listingJCB.setModel(new DefaultComboBoxModel(new String[] {"None", "Ngành theo số sinh viên", "Tỉ lệ nam : nữ", "Điểm", "Xếp loại"}));
 		listingJCB.setFont(new Font("Tahoma", Font.PLAIN, 24));
 		
 		toolBar2.add(listingJCB);
