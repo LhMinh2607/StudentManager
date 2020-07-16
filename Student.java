@@ -7,20 +7,20 @@ public class Student {
 		private String Name;
 		private String Gender;
 		private String Address;
-		private String classStudent;
 		private int Age ;
 		private double Gpa;
+		private String ClassId;
 		
 		public Student() {};
-		public Student(String id, String name, String Gender, String Address, String class1, int i, double d) {
-			super();
+		public Student(String id, String name, String Gender, String Address, String ClassId, int age, double gpa) {
+			//super();
 			this.Id=id;
 			this.Name = name;
 			this.Gender = Gender;
 			this.Address = Address;
-			this.classStudent = class1;
-			this.Age = i;
-			this.Gpa = d;
+			this.Age = age;
+			this.Gpa = gpa;
+			this.ClassId = ClassId;
 		}
 		public String getId() {
 			return Id;
@@ -41,11 +41,8 @@ public class Student {
 		public double getGpa() {
 			return Gpa;
 		}
-		public String getClassStudent() {
-			return classStudent;
-		}
-		public void setClassStudent(String classStudent) {
-			this.classStudent = classStudent;
+		public String getClassId() {
+			return ClassId;
 		}
 		public void setId(String id) {
 			Id = id;
@@ -53,8 +50,8 @@ public class Student {
 		public void setName(String name) {
 			Name = name;
 		}
-		public void setAddress(String Address) {
-			Address = Address;
+		public void setAddress(String address) {
+			Address = address;
 		}
 		public void setAge(int age) {
 			Age = age;
@@ -62,10 +59,13 @@ public class Student {
 		public void setGpa(double gpa) {
 			Gpa = gpa;
 		}
+		public void setClassId(String classId) {
+			ClassId = classId;
+		}
 		
 		@Override
 	public String toString() {
-		return "Student: Id=" + Id + ", Name=" + Name + ", Address=" + Address + ", classStudent=" + classStudent
+		return "Student: Id=" + Id + ", Name=" + Name + ", Address=" + Address + ", classStudent=" + ClassId
 				+ ", Age=" + Age + ", Gpa=" + Gpa +"\n";
 	}
 		
