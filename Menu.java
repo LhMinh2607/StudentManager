@@ -88,6 +88,7 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.JDesktopPane;
+import javax.swing.SwingConstants;
 
 
 
@@ -112,14 +113,14 @@ public class Menu extends JFrame {
             "ID", "Name", "Age", "Address", "GPA"};*/
    // private Object data = new Object [][] {};
     
-    private String[] nganh = {"Công Nghệ Thông Tin","Kỹ thuật viễn thông","Kinh Tế","Kế Toán","Điện - Điện Tử", "Công Trình Xây Dựng", "Kết Cấu Xây Dựng", "Cơ Khí Ôtô", "Giao Thông Công Trình", "Nhiệt Điện", "Kỹ Thuật Điện", "Quản trị kinh doanh", "Kế toán TH và GT", "Kết cấu xây dựng", "Tự động hoá", "Kinh tế XD công trình GT", "Kinh tế vận tải du lịch", "Địa kỹ thuật công trình GT", "Kỹ thuật xây dựng Cầu hầm", "Cơ khí giao thông công chính", "Quản trị Logistics", "Kinh tế bưu chính viễn thông", "Quản trị doanh nghiệp XD"};
-	private final JComboBox comboBox = new JComboBox(nganh);
+    //private String[] nganh = {"Công Nghệ Thông Tin","Kỹ thuật viễn thông","Kinh Tế","Kế Toán","Điện - Điện Tử", "Công Trình Xây Dựng", "Kết Cấu Xây Dựng", "Cơ Khí Ôtô", "Giao Thông Công Trình", "Nhiệt Điện", "Kỹ Thuật Điện", "Quản trị kinh doanh", "Kế toán TH và GT", "Kết cấu xây dựng", "Tự động hoá", "Kinh tế XD công trình GT", "Kinh tế vận tải du lịch", "Địa kỹ thuật công trình GT", "Kỹ thuật xây dựng Cầu hầm", "Cơ khí giao thông công chính", "Quản trị Logistics", "Kinh tế bưu chính viễn thông", "Quản trị doanh nghiệp XD"};
+	private final static JComboBox<String> comboBox = new JComboBox<String>();
 	
 	private StudentDAO std;
 	
 	DefaultTableModel tbl;
 	
-	SQLconnector sqlc = new SQLconnector();
+	static SQLconnector sqlc = new SQLconnector();
 	private final JLabel genderLabel = new JLabel("Giới tính:  ");
 	private final JRadioButton rdbtnFemaleButton = new JRadioButton("Nữ");
 	private final JRadioButton rdbtnMaleButton = new JRadioButton("Nam");
@@ -147,14 +148,21 @@ public class Menu extends JFrame {
 	private final JToolBar toolBar = new JToolBar();
 	private final JLabel RankLabel = new JLabel("Xếp loại: ");
 	private final JComboBox RankTitleJCB = new JComboBox();
-	private final JMenuItem boloc = new JMenuItem("Bộ lọc");
+	private final JMenuItem sortMenuItem = new JMenuItem("Sắp xếp");
 	private final JMenuItem thongke = new JMenuItem("Thống kê");
 	private final JToolBar toolBar2 = new JToolBar();
 	private final JComboBox listingJCB = new JComboBox();
 	private final JButton btnX2 = new JButton("X");
 	private final JLabel ListingLabel = new JLabel("Thống kê: ");
+	private final JLabel classIdLabel = new JLabel("Mã Lớp:  ");
+	private final JTextField ClassIdtextField = new JTextField();
+	private final JToolBar toolBar3 = new JToolBar();
+	private final JLabel SortingLabel = new JLabel("Sắp xếp: ");
+	private final JComboBox SortingJCB = new JComboBox();
+	private final JButton btnX3 = new JButton("X");
+	private final JComboBox OrderJCB = new JComboBox();
+	private final JMenuItem MoreClassesMNIT = new JMenuItem("Quản lý lớp");
 	//private int searchbtnFlag=0;
-	
 	/**
 	 * Launch the application.
 	 */
@@ -181,7 +189,7 @@ public class Menu extends JFrame {
 		//tableUpdate();
 		initGUI();
 		tableUpdate();
-		
+		ClassUpdate();
 	}
 	/*public Student getStudentInfo() {
         // validate student
@@ -350,30 +358,43 @@ public class Menu extends JFrame {
 				toolBar.setEnabled(true);
 				RankTitleJCB.setSelectedIndex(0);
 				toolBar2.setVisible(false);
+				toolBar3.setVisible(false);
 			}
 		});
 		xeploai.setFont(new Font("Segoe UI", Font.PLAIN, 24));
 		
 		FeatureMenu.add(xeploai);
-		boloc.addActionListener(new ActionListener() {
+		sortMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				toolBar.setVisible(false);
 				toolBar2.setVisible(false);
+				toolBar3.setVisible(true);
+				
 			}
 		});
-		boloc.setFont(new Font("Segoe UI", Font.PLAIN, 24));
+		sortMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 24));
 		
-		FeatureMenu.add(boloc);
+		FeatureMenu.add(sortMenuItem);
 		thongke.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				toolBar2.setVisible(true);
 				listingJCB.setSelectedIndex(0);
 				toolBar.setVisible(false);
+				toolBar3.setVisible(false);
 			}
 		});
 		thongke.setFont(new Font("Segoe UI", Font.PLAIN, 24));
 		
 		FeatureMenu.add(thongke);
+		MoreClassesMNIT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ClassForm cf = new ClassForm();
+				cf.setVisible(true);
+			}
+		});
+		MoreClassesMNIT.setFont(new Font("Segoe UI", Font.PLAIN, 24));
+		
+		FeatureMenu.add(MoreClassesMNIT);
 		menuBar.add(clickRefreshbtn);
 		
 		clickRefreshbtn.setVisible(false);
@@ -381,7 +402,34 @@ public class Menu extends JFrame {
 		clickRefreshbtn.setForeground(Color.RED);
 		clickRefreshbtn.setFont(new Font("Times New Roman", Font.BOLD, 24));
 		getContentPane().setLayout(null);
-		comboBox.setModel(new DefaultComboBoxModel(nganh));
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(comboBox.getItemCount()>0)
+				{
+					String c = comboBox.getSelectedItem().toString();
+				
+					//System.out.print(c);
+					try {
+						Connection con = sqlc.getConnection();
+						Statement stm = con.createStatement();
+						ResultSet rs = stm.executeQuery("SELECT * FROM Classes");
+						//
+						while (rs.next()) {
+							String ClassName = rs.getString("ClassName").toString();
+							if(c.equals(ClassName))
+							{
+								ClassIdtextField.setText(rs.getString("ClassId").toString());
+							}
+						}
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+					sqlc.closeConnection();
+				}
+			}
+		});
+		
+		//comboBox.setModel(new DefaultComboBoxModel(lop));
 		
 		
 		
@@ -399,7 +447,7 @@ public class Menu extends JFrame {
 				//DefaultTableModel model = (DefaultTableModel)table.getModel();
 				try {
 						StudentDAO std = new StudentDAO();
-						Student st= new Student(mssvTextField.getText(),NameTextField.getText(),buttonGroup.getSelection().getActionCommand(),AddressTextArea.getText(),(String)comboBox.getSelectedItem(),Integer.parseInt(birthYearTextField.getText()),Double.parseDouble(GPAtextField.getText()));
+						Student st= new Student(mssvTextField.getText(),NameTextField.getText(),buttonGroup.getSelection().getActionCommand(),AddressTextArea.getText(),ClassIdtextField.getText(),Integer.parseInt(birthYearTextField.getText()),Double.parseDouble(GPAtextField.getText()));
 						//System.out.println(Integer.parseInt(mssvTextField.getText())+NameTextField.getText()+AddressTextArea.getText()+(String)comboBox.getSelectedItem()+Integer.parseInt(birthYearTextField.getText())+Double.parseDouble(GPAtextField.getText()));
 						
 						std.save(st);
@@ -423,7 +471,7 @@ public class Menu extends JFrame {
 					}
 			}
 		});
-		Addbtn.setBounds(39, 540, 114, 45);
+		Addbtn.setBounds(39, 573, 114, 45);
 		Addbtn.setFont(new Font("Times New Roman", Font.BOLD, 24));
 		contentPane.add(Addbtn);
 		
@@ -442,70 +490,172 @@ public class Menu extends JFrame {
 		classLabel.setBounds(88, 245, 64, 45);
 		contentPane.add(classLabel);
 		
-		mssvTextField = new JTextField();
-		mssvTextField.setFont(new Font("Tahoma", Font.PLAIN, 24));
+		mssvTextField = new JTextField(20);
+		mssvTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent eve) {
+				char k = eve.getKeyChar();
+				if((Character.isDigit(k)) || (Character.isLetter(k)))
+				{
+					
+					if(mssvTextField.getText().length()<20)
+					{
+						mssvTextField.setEditable(true);
+					}
+					else
+					{
+						mssvTextField.setEditable(false);
+					}
+				}
+				else
+				{
+					if((k==KeyEvent.VK_BACK_SPACE) || k==KeyEvent.VK_DELETE)
+					{
+							
+						mssvTextField.setEditable(true);
+					}
+					else
+					{
+						eve.consume();
+					}
+				}
+				
+				
+				
+			}
+		});
+		mssvTextField.setFont(new Font("Times New Roman", Font.PLAIN, 24));
 		mssvTextField.setBounds(173, 100, 157, 26);
 		contentPane.add(mssvTextField);
 		mssvTextField.setColumns(10);
 		
-		NameTextField = new JTextField();
+		NameTextField = new JTextField(50);
 		NameTextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent eve) {
 				char k = eve.getKeyChar();
-				if(!(Character.isLetter(k) || k==KeyEvent.VK_BACK_SPACE || k==KeyEvent.VK_DELETE || k==KeyEvent.VK_PERIOD || k==KeyEvent.VK_SPACE))
+				if(Character.isLetter(k))
 				{
-					eve.consume(); //Tiêu thụ sự kiện này => Không xử lý nó
+					
+					if(NameTextField.getText().length()<20)
+					{
+						NameTextField.setEditable(true);
+					}
+					else
+					{
+						NameTextField.setEditable(false);
+					}
+				}
+				else
+				{
+					if((k==KeyEvent.VK_BACK_SPACE) || k==KeyEvent.VK_DELETE || k==KeyEvent.VK_SPACE)
+					{
+							
+						NameTextField.setEditable(true);
+					}
+					else
+					{
+						eve.consume(); //Tiêu thụ sự kiện này => Không xử lý nó
+					}
 				}
 			}
 		});
-		NameTextField.setFont(new Font("Tahoma", Font.PLAIN, 24));
+		NameTextField.setFont(new Font("Times New Roman", Font.PLAIN, 24));
 		NameTextField.setColumns(10);
 		NameTextField.setBounds(174, 148, 260, 36);
 		contentPane.add(NameTextField);
 		
 		JLabel gpaLabel = new JLabel("GPA:  ");
 		gpaLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
-		gpaLabel.setBounds(82, 300, 71, 45);
+		gpaLabel.setBounds(82, 333, 71, 45);
 		contentPane.add(gpaLabel);
 		
-		GPAtextField = new JTextField();
+		GPAtextField = new JTextField(3);
 		GPAtextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent eve) {
 				char k = eve.getKeyChar();
-				if(!(Character.isDigit(k) || k==KeyEvent.VK_BACK_SPACE || k==KeyEvent.VK_DELETE || k==KeyEvent.VK_PERIOD))
+				if((Character.isDigit(k))  || k==KeyEvent.VK_PERIOD)
 				{
-					eve.consume(); //Tiêu thụ sự kiện này => Không xử lý nó
+					if(GPAtextField.getText().length()<3)
+					{
+						GPAtextField.setEditable(true);
+					}
+					else
+					{
+						GPAtextField.setEditable(false);
+					}
+				}
+				else
+				{
+					if((k==KeyEvent.VK_BACK_SPACE) || k==KeyEvent.VK_DELETE)
+					{
+						
+						GPAtextField.setEditable(true);
+					}
+					else
+					{
+						eve.consume();
+					}
 				}
 			}
 		});
-		GPAtextField.setFont(new Font("Tahoma", Font.PLAIN, 24));
+		GPAtextField.setFont(new Font("Times New Roman", Font.PLAIN, 24));
 		GPAtextField.setColumns(10);
-		GPAtextField.setBounds(174, 307, 64, 26);
+		GPAtextField.setBounds(174, 340, 64, 26);
 		contentPane.add(GPAtextField);
 		
 		JLabel addressLabel = new JLabel("\u0110\u1ECBa ch\u1EC9: ");
 		addressLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
-		addressLabel.setBounds(63, 355, 90, 45);
+		addressLabel.setBounds(63, 388, 90, 45);
 		contentPane.add(addressLabel);
 		
 		
 		
 		
 		AddressTextArea = new JTextArea();
+		AddressTextArea.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent eve) {
+				char k = eve.getKeyChar();
+				if((Character.isDigit(k)) || (Character.isLetter(k)))
+				{
+					
+					if(AddressTextArea.getText().length()<50)
+					{
+						AddressTextArea.setEditable(true);
+					}
+					else
+					{
+						AddressTextArea.setEditable(false);
+					}
+				}
+				else
+				{
+					if((k==KeyEvent.VK_BACK_SPACE) || k==KeyEvent.VK_DELETE || k==KeyEvent.VK_SPACE)
+					{
+							
+						AddressTextArea.setEditable(true);
+					}
+					else
+					{
+						eve.consume();
+					}
+				}
+			}
+		});
 		//AddressTextArea.setWrapStyleWord(true);
 		AddressTextArea.setLineWrap(true);
 		AddressTextArea.setRows(5);
 		AddressTextArea.setFont(new Font("Times New Roman", Font.PLAIN, 24));
-		AddressTextArea.setBounds(173, 369, 288, 100);
+		AddressTextArea.setBounds(173, 402, 288, 100);
 		contentPane.add(AddressTextArea);
 		
 		
 		
 		JLabel birthYearLabel = new JLabel("Năm Sinh: ");
 		birthYearLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
-		birthYearLabel.setBounds(39, 468, 114, 45);
+		birthYearLabel.setBounds(39, 501, 114, 45);
 		contentPane.add(birthYearLabel);
 		
 		birthYearTextField = new JTextField();
@@ -513,15 +663,34 @@ public class Menu extends JFrame {
 			@Override
 			public void keyTyped(KeyEvent eve) {
 				char k = eve.getKeyChar();
-				if(!(Character.isDigit(k) || (k==KeyEvent.VK_BACK_SPACE) || k==KeyEvent.VK_DELETE))
+				if((Character.isDigit(k)))
 				{
-					eve.consume();
+					if(birthYearTextField.getText().length()<4)
+					{
+						birthYearTextField.setEditable(true);
+					}
+					else
+					{
+						birthYearTextField.setEditable(false);
+					}
 				}
+				else
+				{
+					if((k==KeyEvent.VK_BACK_SPACE) || k==KeyEvent.VK_DELETE)
+					{
+						birthYearTextField.setEditable(true);
+					}
+					else
+					{
+						eve.consume();
+					}
+				}
+				
 			}
 		});
-		birthYearTextField.setFont(new Font("Tahoma", Font.PLAIN, 24));
+		birthYearTextField.setFont(new Font("Times New Roman", Font.PLAIN, 24));
 		birthYearTextField.setColumns(10);
-		birthYearTextField.setBounds(172, 479, 124, 26);
+		birthYearTextField.setBounds(172, 512, 124, 26);
 		contentPane.add(birthYearTextField);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -555,13 +724,33 @@ public class Menu extends JFrame {
 					rdbtnMaleButton.setSelected(true);
 				}
 				AddressTextArea.setText(dc);
-				comboBox.setSelectedItem(lop);
+				ClassIdtextField.setText(lop);
 				birthYearTextField.setText(ns);
 				GPAtextField.setText(gpa);
 				
 				Updatebtn.setEnabled(true);
 				Deletebtn.setEnabled(true);
 				Addbtn.setEnabled(false);
+				
+				//int i;
+				//String c = comboBox.getSelectedItem().toString();
+				//System.out.print(c);
+				try {
+					Connection con = sqlc.getConnection();
+					Statement stm = con.createStatement();
+					ResultSet rs = stm.executeQuery("SELECT * FROM Classes");
+					//
+					while (rs.next()) {
+						String ClassId = rs.getString("ClassId").toString();
+						if(lop.equals(ClassId))
+						{
+							comboBox.setSelectedItem(rs.getString("ClassName").toString());
+						}
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				sqlc.closeConnection();
 			}
 		});
 		//stTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -604,7 +793,7 @@ public class Menu extends JFrame {
 					//String value=(stTable.getModel().getValueAt(row, 0).toString());
 					
 					
-					Student st= new Student(mssvTextField.getText(),NameTextField.getText(),buttonGroup.getSelection().getActionCommand(),AddressTextArea.getText(),(String)comboBox.getSelectedItem(),Integer.parseInt(birthYearTextField.getText()),Double.parseDouble(GPAtextField.getText()));
+					Student st= new Student(mssvTextField.getText(),NameTextField.getText(),buttonGroup.getSelection().getActionCommand(),AddressTextArea.getText(),ClassIdtextField.getText(),Integer.parseInt(birthYearTextField.getText()),Double.parseDouble(GPAtextField.getText()));
 					std.update(st);
 					tbl.setRowCount(0);
 					tableUpdate();
@@ -633,7 +822,7 @@ public class Menu extends JFrame {
 			}
 		});
 		Updatebtn.setFont(new Font("Times New Roman", Font.BOLD, 24));
-		Updatebtn.setBounds(177, 540, 114, 45);
+		Updatebtn.setBounds(177, 573, 114, 45);
 		contentPane.add(Updatebtn);
 		
 		
@@ -692,7 +881,7 @@ public class Menu extends JFrame {
 			}
 		});
 		Deletebtn.setFont(new Font("Times New Roman", Font.BOLD, 24));
-		Deletebtn.setBounds(319, 540, 114, 45);
+		Deletebtn.setBounds(319, 573, 114, 45);
 		contentPane.add(Deletebtn);
 		genderLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
 		genderLabel.setBounds(39, 200, 113, 45);
@@ -736,7 +925,7 @@ public class Menu extends JFrame {
 				
 				try {
 					Connection con = sqlc.getConnection();
-					PreparedStatement pst = con.prepareStatement("SELECT * FROM Students WHERE ID=?");
+					PreparedStatement pst = con.prepareStatement("SELECT * FROM Students, Classes WHERE Students.ClassId=Classes.ClassId AND ID=?");
 					pst.setString(1, idSearchField.getText());
 					ResultSet rs = pst.executeQuery();
 					while (rs.next()) {
@@ -748,7 +937,7 @@ public class Menu extends JFrame {
 						
 						String address = rs.getString("Address");
 						
-						String Class = rs.getString("Class");
+						String lop = rs.getString("ClassId");
 						
 						String birthYear = rs.getString("birthYear");
 						
@@ -766,9 +955,10 @@ public class Menu extends JFrame {
 							rdbtnMaleButton.setSelected(true);
 						}
 						AddressTextArea.setText(address);
-						comboBox.setSelectedItem(Class);
+						ClassIdtextField.setText(lop);;
 						birthYearTextField.setText(birthYear);
 						GPAtextField.setText(gpa);
+						comboBox.setSelectedItem(rs.getString("ClassName").toString());
 						
 						
 						//result.add(new Student(ID, Name, Gender, Address, Class, BirthYear, GPA));
@@ -802,7 +992,7 @@ public class Menu extends JFrame {
 			}
 		});
 		ClearField.setFont(new Font("Times New Roman", Font.BOLD, 24));
-		ClearField.setBounds(319, 479, 114, 45);
+		ClearField.setBounds(319, 512, 114, 45);
 		SearchLabel.setToolTipText("Refresh chương trình về trạng thái ban đầu");
 		
 		SearchLabel.setVisible(false);
@@ -837,53 +1027,7 @@ public class Menu extends JFrame {
 				birthYearTextField.setText("");
 				GPAtextField.setText("");
 				
-				try {
-					Connection con = sqlc.getConnection();
-					PreparedStatement pst = con.prepareStatement("SELECT * FROM Students WHERE Name=?");
-					pst.setString(1, nameSearchField.getText());
-					ResultSet rs = pst.executeQuery();
-					while (rs.next()) {
-						String ID = rs.getString("ID");
-						
-						String name = rs.getString("Name");
-						
-						String gender = rs.getString("Gender");
-						
-						String address = rs.getString("Address");
-						
-						String Class = rs.getString("Class");
-						
-						String birthYear = rs.getString("birthYear");
-						
-						String gpa = rs.getString("GPA");
-						
-						mssvTextField.setText(ID);
-						mssvTextField.setEditable(false);
-						NameTextField.setText(name);
-						if(gender.equals("Nữ"))
-						{
-							rdbtnFemaleButton.setSelected(true);
-						}
-						if(gender.equals("Nam"))
-						{
-							rdbtnMaleButton.setSelected(true);
-						}
-						AddressTextArea.setText(address);
-						comboBox.setSelectedItem(Class);
-						birthYearTextField.setText(birthYear);
-						GPAtextField.setText(gpa);
-						
-						Updatebtn.setEnabled(true);
-						Deletebtn.setEnabled(true);
-						//result.add(new Student(ID, Name, Gender, Address, Class, BirthYear, GPA));
-					}
-					
-					
-						
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-				sqlc.closeConnection();
+				
 				
 				tbl.setRowCount(0); //reset table
 				tableUpdateFiltered("SELECT * FROM Students WHERE Name LIKE N'%"+nameSearchField.getText()+"%'"); //update table based on filter
@@ -964,7 +1108,7 @@ public class Menu extends JFrame {
 					GenderBox.setVisible(true);
 				}
 				mssvTextField.setText("");
-				mssvTextField.setEditable(true);
+				mssvTextField.setEditable(false);
 				NameTextField.setText("");
 				rdbtnFemaleButton.setSelected(false);
 				rdbtnMaleButton.setSelected(false);
@@ -1022,7 +1166,7 @@ public class Menu extends JFrame {
 		contentPane.add(hideSearchBtn);
 		
 		JSeparator separator = new JSeparator();
-		separator.setBounds(39, 532, 419, 8);
+		separator.setBounds(39, 565, 419, 8);
 		contentPane.add(separator);
 		toolBar.setBackground(SystemColor.activeCaption);
 		toolBar.setBounds(0, 0, 296, 45);
@@ -1095,7 +1239,7 @@ public class Menu extends JFrame {
 		RankLabel.setForeground(SystemColor.desktop);
 		toolBar.add(RankLabel);
 		RankLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
-		RankTitleJCB.setFont(new Font("Tahoma", Font.PLAIN, 24));
+		RankTitleJCB.setFont(new Font("Times New Roman", Font.PLAIN, 24));
 		RankTitleJCB.setModel(new DefaultComboBoxModel(new String[] {"Tất cả", "Xuất sắc", "Giỏi", "Khá", "Trung Bình", "Yếu"}));
 		toolBar.add(RankTitleJCB);
 		toolBar.add(btnX);
@@ -1136,35 +1280,40 @@ public class Menu extends JFrame {
 				}
 				if(select.equals("Ngành theo số sinh viên"))
 				{
-					int i;
-					int[] count = new int[100];
-					for(i=0;i<nganh.length;i++)
-					{
-						tbl.setRowCount(0);
-						tableUpdateFiltered("SELECT * FROM Students WHERE CLASS=N'"+nganh[i]+"'");
-						if(stTable.getRowCount()==0)
-						{
-							count[i]=0;
-						}
-						if(stTable.getRowCount()!=0)
-						{
-							count[i]=stTable.getRowCount();
-						}
-						
-					}
-					
-					tbl.setRowCount(0);
-					tableUpdate();
-					
+					int i=0;
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
-					for(i=0;i<nganh.length;i++)
-					{
-						pieDataset.setValue(nganh[i], count[i]);
+					try {
+						Connection con = sqlc.getConnection();
+						Statement stm = con.createStatement();
+						ResultSet rs = stm.executeQuery("SELECT * FROM Students, Classes WHERE Students.ClassId=Classes.ClassId");
+						int count=0;
+						while (rs.next()) {
+							//String ClassId = rs.getString("ClassId").toString();
+							
+							tbl.setRowCount(0);
+							tableUpdateFiltered("SELECT * FROM Students WHERE ClassId=N'"+rs.getString("ClassId").toString()+"'");
+							if(stTable.getRowCount()==0)
+							{
+								count=0;
+							}
+							if(stTable.getRowCount()!=0)
+							{
+								count=stTable.getRowCount();
+							}	
+							i++;
+							pieDataset.setValue(rs.getString("ClassName"), count);
+							System.out.println(rs.getString("ClassName")+" "+count);
+							count=0;
+						}
+						tbl.setRowCount(0);
+						tableUpdate();
+						
+					} catch (SQLException e1) {
+						e1.printStackTrace();
 					}
-					for(i=0;i<nganh.length;i++)
-					{
-						System.out.print(count[i]+" ngành "+i+" ");
-					}
+					sqlc.closeConnection();
+					
+					
 					
 					JFreeChart chart = ChartFactory.createPieChart("Tỉ lệ Ngành theo số sinh viên", pieDataset, true, true, true);					
 					ChartFrame frame = new ChartFrame("Sơ đồ tròn Ngành theo số sinh viên", chart);
@@ -1245,7 +1394,7 @@ public class Menu extends JFrame {
 			}
 		});
 		listingJCB.setModel(new DefaultComboBoxModel(new String[] {"None", "Ngành theo số sinh viên", "Tỉ lệ nam : nữ", "Điểm", "Xếp loại"}));
-		listingJCB.setFont(new Font("Tahoma", Font.PLAIN, 24));
+		listingJCB.setFont(new Font("Times New Roman", Font.PLAIN, 24));
 		
 		toolBar2.add(listingJCB);
 		btnX2.addActionListener(new ActionListener() {
@@ -1258,6 +1407,183 @@ public class Menu extends JFrame {
 		btnX2.setBackground(Color.RED);
 		
 		toolBar2.add(btnX2);
+		classIdLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+		classIdLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
+		classIdLabel.setBounds(39, 294, 113, 36);
+		
+		contentPane.add(classIdLabel);
+		
+		ClassIdtextField.setText("CNTT");
+		ClassIdtextField.setEditable(false);
+		ClassIdtextField.setFont(new Font("Times New Roman", Font.PLAIN, 24));
+		ClassIdtextField.setColumns(10);
+		ClassIdtextField.setBounds(174, 301, 157, 26);
+		
+		contentPane.add(ClassIdtextField);
+		toolBar3.setBackground(SystemColor.textHighlight);
+		toolBar3.setBounds(0, 43, 478, 45);
+		toolBar3.setVisible(false);
+		
+		contentPane.add(toolBar3);
+		toolBar3.add(SortingLabel);
+		SortingLabel.setForeground(SystemColor.desktop);
+		SortingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
+		SortingLabel.setBackground(Color.BLACK);
+		SortingJCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				functionReset();
+				tbl.setRowCount(0);
+				mssvTextField.setEditable(false);
+				String select = SortingJCB.getSelectedItem().toString();
+				String citeria = OrderJCB.getSelectedItem().toString();
+				if(select.equals("MSSV") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Id ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("MSSV") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Id DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Họ & Tên") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Name ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Họ & Tên") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Name DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Giới Tính") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Gender ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Giới Tính") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Gender DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Lớp") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY ClassId ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Lớp") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY ClassId DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Điểm") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY GPA ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Điểm") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY GPA DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Năm sinh") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY BirthYear ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Năm sinh") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY BirthYear DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+			}
+		});
+		SortingJCB.setFont(new Font("Times New Roman", Font.PLAIN, 24));
+		SortingJCB.setModel(new DefaultComboBoxModel(new String[] {"MSSV", "Họ & Tên", "Giới Tính", "Lớp", "Năm sinh", "Điểm"}));
+		toolBar3.add(SortingJCB);
+		btnX3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toolBar3.setVisible(false);
+				toolBar3.setEnabled(false);
+			}
+		});
+		OrderJCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				functionReset();
+				tbl.setRowCount(0);
+				mssvTextField.setEditable(false);
+				String select = SortingJCB.getSelectedItem().toString();
+				String citeria = OrderJCB.getSelectedItem().toString();
+				if(select.equals("MSSV") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Id ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("MSSV") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Id DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Họ & Tên") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Name ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Họ & Tên") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Name DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Giới Tính") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Gender ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Giới Tính") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY Gender DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Lớp") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY ClassId ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Lớp") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY ClassId DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Điểm") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY GPA ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Điểm") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY GPA DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Năm sinh") && citeria.equals("Tăng dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY BirthYear ASC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+				if(select.equals("Năm sinh") && citeria.equals("Giảm dần"))
+				{
+					tableUpdateFiltered("SELECT * FROM Students ORDER BY BirthYear DESC"); //update table based on filter
+					clickRefreshbtn.setVisible(true); //show the tip
+				}
+			}
+		});
+		OrderJCB.setModel(new DefaultComboBoxModel(new String[] {"Tăng dần", "Giảm dần"}));
+		toolBar3.add(OrderJCB);
+		OrderJCB.setFont(new Font("Times New Roman", Font.PLAIN, 24));
+		btnX3.setForeground(Color.WHITE);
+		btnX3.setFont(new Font("Tahoma", Font.BOLD, 24));
+		btnX3.setBackground(Color.RED);
+		
+		toolBar3.add(btnX3);
 		hideSearchBtn.setVisible(false);
 		
 		//System.out.println(buttonGroup.getSelection().getActionCommand());
@@ -1294,12 +1620,11 @@ public class Menu extends JFrame {
 				String Name = rs.getString("Name");
 				String Gender = rs.getString("Gender");
 				String Address = rs.getString("Address");
-				String Class = rs.getString("Class");
+				String ClassId = rs.getString("ClassId");
 				int BirthYear = rs.getInt("BirthYear");
 				float GPA = rs.getFloat("GPA");
-
 				
-				result.add(new Student(ID, Name, Gender, Address, Class, BirthYear, GPA));
+				result.add(new Student(ID, Name, Gender, Address, ClassId, BirthYear, GPA));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1319,7 +1644,7 @@ public class Menu extends JFrame {
 			row[1]=stl.get(i).getName();
 			row[2]=stl.get(i).getGender();
 			row[3]=stl.get(i).getAddress();
-			row[4]=stl.get(i).getClassStudent();
+			row[4]=stl.get(i).getClassId();
 			row[5]=stl.get(i).getAge();
 			row[6]=stl.get(i).getGpa();
 			tbl.addRow(row);
@@ -1339,11 +1664,11 @@ public class Menu extends JFrame {
 				String Name = rs.getString("Name");
 				String Gender = rs.getString("Gender");
 				String Address = rs.getString("Address");
-				String Class = rs.getString("Class");
+				String ClassId = rs.getString("ClassId");
 				int BirthYear = rs.getInt("BirthYear");
 				float GPA = rs.getFloat("GPA");
 				
-				result.add(new Student(ID, Name, Gender, Address, Class, BirthYear, GPA));
+				result.add(new Student(ID, Name, Gender, Address, ClassId, BirthYear, GPA));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1362,7 +1687,7 @@ public class Menu extends JFrame {
 			row[1]=stl.get(i).getName();
 			row[2]=stl.get(i).getGender();
 			row[3]=stl.get(i).getAddress();
-			row[4]=stl.get(i).getClassStudent();
+			row[4]=stl.get(i).getClassId();
 			row[5]=stl.get(i).getAge();
 			row[6]=stl.get(i).getGpa();
 			tbl.addRow(row);
@@ -1396,6 +1721,7 @@ public class Menu extends JFrame {
 		Updatebtn.setEnabled(false);
 		Deletebtn.setEnabled(false);
 		Addbtn.setEnabled(true);
+		ClassUpdate();
 	}
 	
 	public void exportExcel(JTable table) {
@@ -1435,5 +1761,26 @@ public class Menu extends JFrame {
 					JOptionPane.showMessageDialog(null, "Lỗi khi lưu file!");
 				}
 		}
+	}
+	
+	
+	public static void ClassUpdate() //Update class datas
+	{
+		System.out.println("ClassUpdate");
+		if(comboBox.getItemCount()>0)
+		{
+			comboBox.removeAllItems();
+		}
+		try {
+			Connection con = sqlc.getConnection();
+			Statement stm = con.createStatement();
+			ResultSet rs = stm.executeQuery("SELECT * FROM Classes");
+			while (rs.next()) {
+				comboBox.addItem(rs.getString("ClassName"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		sqlc.closeConnection();
 	}
 }
