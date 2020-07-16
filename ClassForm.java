@@ -327,4 +327,5 @@ public class ClassForm extends JFrame {
 		}
 		return result > 0;
 	}
+	
 }
