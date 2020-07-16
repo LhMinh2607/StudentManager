@@ -94,9 +94,9 @@ public class StudentDAO implements DAO<Student, String> {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			JLabel mess = new JLabel(e.getMessage());
-			mess.setFont(new Font("Arial", Font.BOLD, 24));
-			JOptionPane.showMessageDialog(null, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
+			//JLabel mess = new JLabel(e.getMessage());
+			//mess.setFont(new Font("Arial", Font.BOLD, 24));
+			//JOptionPane.showMessageDialog(null, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
 		}
 		return result > 0;
 	}
@@ -128,7 +128,7 @@ public class StudentDAO implements DAO<Student, String> {
 		//int result = -1;
 		Connection con = sqlc.getConnection();
 		try {
-			PreparedStatement pst = con.prepareStatement("DELETE FROM STUDENTS WHERE Id='" + val +"'");
+			PreparedStatement pst = con.prepareStatement("DELETE FROM STUDENTS WHERE Id=N'" + val +"'");
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
