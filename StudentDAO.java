@@ -60,10 +60,10 @@ public class StudentDAO implements DAO<Student, String> {
 				String Name = rs.getString("Name");
 				String Gender = rs.getString("Gender");
 				String Address = rs.getString("Address");
-				String Class = rs.getString("Class");
+				String ClassId = rs.getString("ClassId");
 				byte BirthYear = rs.getByte("BirthYear");
 				float GPA = rs.getFloat("GPA");
-				result =new Student(ID, Name, Gender, Address, Class, BirthYear, GPA);			
+				result =new Student(ID, Name, Gender, Address, ClassId, BirthYear, GPA);			
 				}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -83,8 +83,8 @@ public class StudentDAO implements DAO<Student, String> {
 			//if (t.getId() != 0 && !"".equals(t.getId())) 
 			//{
 	            Statement stm = con.createStatement();
-				String sql = "INSERT INTO Students (ID, Name, Gender, Address, Class, BirthYear, GPA) values ('" + t.getId() + "', N'" + t.getName() + "', N'" + t.getGender() + "', N'" + t.getAddress()
-				+ "', N'" + t.getClassStudent() + "', '" + t.getAge() + "', '" +t.getGpa()+ "')";
+				String sql = "INSERT INTO Students (ID, Name, Gender, Address, ClassId, BirthYear, GPA) values (N'" + t.getId() + "', N'" + t.getName() + "', N'" + t.getGender() + "', N'" + t.getAddress()
+				+ "', '" + t.getClassId() + "', '" + t.getAge() + "', '" +t.getGpa()+ "')";
 				result = stm.executeUpdate(sql);
 				JLabel mess2 = new JLabel("Đã thêm 1 sinh viên");
 				mess2.setFont(new Font("Arial", Font.BOLD, 18));
@@ -107,7 +107,7 @@ public class StudentDAO implements DAO<Student, String> {
 		Connection con = sqlc.getConnection();
 		try {
 			Statement stm = con.createStatement();
-			String sql = "UPDATE Students SET Name=N'"+t.getName()+"', Gender=N'"+t.getGender()+"', Address=N'"+t.getAddress()+"', Class=N'"+t.getClassStudent()+"', BirthYear="+t.getAge()+", GPA="+t.getGpa()+" WHERE ID=N'" + t.getId() + "'";
+			String sql = "UPDATE Students SET Name=N'"+t.getName()+"', Gender=N'"+t.getGender()+"', Address=N'"+t.getAddress()+"', ClassId=N'"+t.getClassId()+"', BirthYear="+t.getAge()+", GPA="+t.getGpa()+" WHERE ID=N'" + t.getId() + "'";
 			result = stm.executeUpdate(sql);
 			
 			JLabel mess = new JLabel("Đã cập nhật 1 sinh viên");
@@ -128,7 +128,7 @@ public class StudentDAO implements DAO<Student, String> {
 		//int result = -1;
 		Connection con = sqlc.getConnection();
 		try {
-			PreparedStatement pst = con.prepareStatement("DELETE FROM STUDENTS WHERE Id=N'" + val +"'");
+			PreparedStatement pst = con.prepareStatement("DELETE FROM STUDENTS WHERE Id='" + val +"'");
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
