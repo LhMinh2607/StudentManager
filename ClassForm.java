@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ClassForm extends JFrame {
 	private final JButton EnterClassBtn = new JButton("Nhập");
 	private final JButton DeleteClassBtn = new JButton("Xóa");
 	public List<Classes> listClasses;
+	private final JButton UpdateClassBtn = new JButton("Sửa");
 	/**
 	 * Launch the application.
 	 */
@@ -56,6 +58,7 @@ public class ClassForm extends JFrame {
 		initGUI();
 	}
 	private void initGUI() {
+		setTitle("Quản lý lớp");
 		setResizable(false);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -171,7 +174,7 @@ public class ClassForm extends JFrame {
 			}
 		});
 		EnterClassBtn.setFont(new Font("Times New Roman", Font.PLAIN, 24));
-		EnterClassBtn.setBounds(27, 191, 163, 46);
+		EnterClassBtn.setBounds(27, 191, 106, 46);
 		
 		contentPane.add(EnterClassBtn);
 		DeleteClassBtn.addActionListener(new ActionListener() {
@@ -206,24 +209,62 @@ public class ClassForm extends JFrame {
 			}
 		});
 		DeleteClassBtn.setFont(new Font("Times New Roman", Font.PLAIN, 24));
-		DeleteClassBtn.setBounds(217, 191, 163, 46);
+		DeleteClassBtn.setBounds(296, 191, 106, 46);
 		
 		contentPane.add(DeleteClassBtn);
+		
+		UpdateClassBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if(!ClassIdTextField.getText().equals("") && !ClassNameTextField.getText().equals(""))
+					{
+						Classes cl = new Classes(ClassIdTextField.getText(),ClassNameTextField.getText());
+						update(cl);
+						setVisible(false);
+					}
+					
+					else
+					{
+						throw new Exception("For input string: \"\"");
+					}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					if(e1.getMessage().equals("For input string: \"\""))
+					{
+						JLabel mess = new JLabel("Thông tin chưa được nhập đầy đủ");
+						mess.setFont(new Font("Arial", Font.BOLD, 18));
+						JOptionPane.showMessageDialog(null, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
+					}
+					else
+					{
+						JLabel mess = new JLabel(e1.getMessage());
+						mess.setFont(new Font("Arial", Font.BOLD, 24));
+						JOptionPane.showMessageDialog(null, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
+					}
+				}
+			}
+		});
+		UpdateClassBtn.setFont(new Font("Times New Roman", Font.PLAIN, 24));
+		UpdateClassBtn.setBounds(164, 191, 106, 46);
+		
+		contentPane.add(UpdateClassBtn);
 	}
 	
 	
-	public boolean save(Classes cl) {
+	public boolean save(Classes cl) 
+	{
 		int result = -1;
 		Connection con = sqlc.getConnection();
 		try {
-	            Statement stm = con.createStatement();
-				String sql = "INSERT INTO Classes (ClassId, ClassName) values (N'" + cl.getClassId() + "', N'" + cl.getClassName() + "')";
+				Statement stm = con.createStatement();
+				String sql = "INSERT INTO Classes VALUES (N'"+cl.getClassId()+"', N'" + cl.getClassName() + "')";
 				result = stm.executeUpdate(sql);
-				JLabel mess2 = new JLabel("Đã thêm 1 lớp");
+				JLabel mess2 = new JLabel("Đã nhập 1 lớp");
 				mess2.setFont(new Font("Arial", Font.BOLD, 18));
 				JOptionPane.showMessageDialog(null, mess2);
 				Menu.ClassUpdate();
-		} catch (SQLException e) {
+			} catch (SQLException e) {
 			e.printStackTrace();
 			JLabel mess = new JLabel(e.getMessage());
 			mess.setFont(new Font("Arial", Font.BOLD, 24));
@@ -234,9 +275,10 @@ public class ClassForm extends JFrame {
 	
 	public boolean delete(String ml) {
 		int result = -1;
+		int i;
 		Connection con = sqlc.getConnection();
 		try {
-	            Statement stm = con.createStatement();
+				Statement stm = con.createStatement();
 				String sql = "DELETE Classes WHERE ClassId=N'" + ml + "'";
 				result = stm.executeUpdate(sql);
 				JLabel mess2 = new JLabel("Đã xóa 1 lớp");
@@ -245,6 +287,40 @@ public class ClassForm extends JFrame {
 				Menu.ClassUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			/*if(e.getMessage().equals("404"));
+			{
+				JLabel mess = new JLabel("Không tìm thấy lớp để xóa");
+				mess.setFont(new Font("Arial", Font.BOLD, 24));
+				JOptionPane.showMessageDialog(null, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
+			}*/
+			JLabel mess = new JLabel("Xóa không đúng cách. Cụ thể lỗi: "+e.getMessage());
+			mess.setFont(new Font("Arial", Font.BOLD, 24));
+			JOptionPane.showMessageDialog(null, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
+			
+		}
+		return result > 0;
+	}
+	
+	public boolean update(Classes cl) {
+		int result = -1;
+		Connection con = sqlc.getConnection();
+		try {
+				Statement stm = con.createStatement();
+				String sql = "UPDATE Classes SET ClassName=N'"+cl.getClassName()+"' WHERE ClassId=N'" + cl.getClassId() + "'";
+				result = stm.executeUpdate(sql);
+				JLabel mess2 = new JLabel("Đã sửa 1 lớp");
+				mess2.setFont(new Font("Arial", Font.BOLD, 18));
+				JOptionPane.showMessageDialog(null, mess2);
+				Menu.ClassUpdate();
+	            
+		} catch (SQLException e) {
+			e.printStackTrace();
+			/*if(e.getMessage().equals("404"));
+			{
+				JLabel mess = new JLabel("Không tìm thấy lớp để sửa");
+				mess.setFont(new Font("Arial", Font.BOLD, 24));
+				JOptionPane.showMessageDialog(null, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
+			}*/
 			JLabel mess = new JLabel(e.getMessage());
 			mess.setFont(new Font("Arial", Font.BOLD, 24));
 			JOptionPane.showMessageDialog(null, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
