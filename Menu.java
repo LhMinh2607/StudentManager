@@ -446,22 +446,47 @@ public class Menu extends JFrame {
 				//Student st= new Student(Integer.parseInt(mssvTextField.getText()),NameTextField.getText(),AddressTextArea.getText(),(String)comboBox.getSelectedItem(),Integer.parseInt(birthYearTextField.getText()),Double.parseDouble(GPAtextField.getText()));
 				//DefaultTableModel model = (DefaultTableModel)table.getModel();
 				try {
-						StudentDAO std = new StudentDAO();
-						Student st= new Student(mssvTextField.getText(),NameTextField.getText(),buttonGroup.getSelection().getActionCommand(),AddressTextArea.getText(),ClassIdtextField.getText(),Integer.parseInt(birthYearTextField.getText()),Double.parseDouble(GPAtextField.getText()));
-						//System.out.println(Integer.parseInt(mssvTextField.getText())+NameTextField.getText()+AddressTextArea.getText()+(String)comboBox.getSelectedItem()+Integer.parseInt(birthYearTextField.getText())+Double.parseDouble(GPAtextField.getText()));
-						
-						std.save(st);
-						tbl.setRowCount(0);
-						tableUpdate();
-					} catch (NumberFormatException e1) {
+						if(Integer.parseInt(birthYearTextField.getText())<=2002 && Double.parseDouble(GPAtextField.getText())<=10)
+						{
+							StudentDAO std = new StudentDAO();
+							Student st= new Student(mssvTextField.getText(),NameTextField.getText(),buttonGroup.getSelection().getActionCommand(),AddressTextArea.getText(),ClassIdtextField.getText(),Integer.parseInt(birthYearTextField.getText()),Double.parseDouble(GPAtextField.getText()));
+							//System.out.println(Integer.parseInt(mssvTextField.getText())+NameTextField.getText()+AddressTextArea.getText()+(String)comboBox.getSelectedItem()+Integer.parseInt(birthYearTextField.getText())+Double.parseDouble(GPAtextField.getText()));
+							
+							std.save(st);
+							tbl.setRowCount(0);
+							tableUpdate();
+						}
+						if(Integer.parseInt(birthYearTextField.getText())>2002)
+						{
+							throw new Exception("birthyear");
+						}
+						if(Double.parseDouble(GPAtextField.getText())>10)
+						{
+							throw new Exception("gpa");
+						}
+							
+					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
+						if(e1.getMessage().equals("birthyear"))
+						{
+							JLabel mess = new JLabel("Năm sinh phải bé hơn hoặc bằng 2002");
+							mess.setFont(new Font("Arial", Font.BOLD, 18));
+							JOptionPane.showMessageDialog(frame, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
+						}
+						if(e1.getMessage().equals("gpa"))
+						{
+							JLabel mess = new JLabel("Điểm phải bé hơn hoặc bằng 10");
+							mess.setFont(new Font("Arial", Font.BOLD, 18));
+							JOptionPane.showMessageDialog(frame, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
+						}
 						if(e1.getMessage().equals("For input string: \"\""))
 						{
 							JLabel mess = new JLabel("Thông tin chưa được nhập đầy đủ");
 							mess.setFont(new Font("Arial", Font.BOLD, 18));
 							JOptionPane.showMessageDialog(frame, mess, "LỖI", JOptionPane.PLAIN_MESSAGE);
 						}
+						
 						else
 						{
 							JLabel mess = new JLabel("Thông tin nhập không đúng cách. Cụ thể lỗi: "+e1.getMessage());
