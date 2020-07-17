@@ -89,6 +89,7 @@ import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.JDesktopPane;
 import javax.swing.SwingConstants;
+import javax.swing.ImageIcon;
 
 
 
@@ -162,6 +163,8 @@ public class Menu extends JFrame {
 	private final JButton btnX3 = new JButton("X");
 	private final JComboBox OrderJCB = new JComboBox();
 	private final JMenuItem MoreClassesMNIT = new JMenuItem("Quản lý lớp");
+	private final JLabel logoLabel = new JLabel("New label");
+	private final JLabel logoLabel_1 = new JLabel("New label");
 	//private int searchbtnFlag=0;
 	/**
 	 * Launch the application.
@@ -1609,6 +1612,14 @@ public class Menu extends JFrame {
 		btnX3.setBackground(Color.RED);
 		
 		toolBar3.add(btnX3);
+		logoLabel.setIcon(new ImageIcon(Menu.class.getResource("/img/logoUTC2.png")));
+		logoLabel.setBounds(39, 640, 141, 140);
+		
+		contentPane.add(logoLabel);
+		logoLabel_1.setIcon(new ImageIcon(Menu.class.getResource("/img/unnamed.png")));
+		logoLabel_1.setBounds(174, 620, 244, 256);
+		
+		contentPane.add(logoLabel_1);
 		hideSearchBtn.setVisible(false);
 		
 		//System.out.println(buttonGroup.getSelection().getActionCommand());
@@ -1807,6 +1818,5 @@ public class Menu extends JFrame {
 			e.printStackTrace();
 		}
 		sqlc.closeConnection();
-		
 	}
 }
